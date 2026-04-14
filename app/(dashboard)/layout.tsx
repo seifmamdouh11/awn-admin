@@ -143,6 +143,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [isLoading, adminRole, router]);
 
+  useEffect(() => {
+    if (mounted) {
+      const activeNav = NAV_ITEMS.find((item) => item.path === pathname);
+      const title = activeNav ? activeNav.label : "Dashboard";
+      document.title = `${title} | AWN Admin`;
+    }
+  }, [pathname, mounted, tr, adminRole]); // adminRole triggers recalculation of NAV_ITEMS
+
   if (isLoading || !mounted || !adminRole) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
