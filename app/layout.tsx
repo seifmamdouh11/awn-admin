@@ -12,8 +12,12 @@ export const metadata: Metadata = {
   description: "Administrative Master Interface for AWN Platform - Manage volunteers, companies, and financial operations securely.",
   keywords: ["volunteering", "impact", "governance", "admin dashboard", "management portal"],
   authors: [{ name: "AWN Team" }],
-  viewport: "width=device-width, initial-scale=1",
   robots: "noindex, nofollow",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
