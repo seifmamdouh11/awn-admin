@@ -128,8 +128,25 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [mounted, setMounted] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const tr = t[lang as keyof typeof t];
   const isRTL = lang === "ar";
+  const tr = t[lang as keyof typeof t];
+
+  const NAV_ITEMS: { label: string; path: string; icon: React.ReactNode }[] = [
+    { label: tr.overviewHub, path: "/", icon: <LayoutDashboard size={20} /> },
+    { label: tr.companiesDesk, path: "/companies", icon: <Building2 size={20} /> },
+    { label: tr.volunteersDesk, path: "/volunteers", icon: <Users size={20} /> },
+    { label: tr.opportunities, path: "/events", icon: <CalendarDays size={20} /> },
+    { label: tr.reviewOpportunities, path: "/events/pending", icon: <ShieldCheck size={20} /> },
+  ];
+
+  if (adminRole === 'super_admin') {
+    NAV_ITEMS.push(
+      { label: tr.financeDesk, path: "/finance", icon: <Coins size={20} /> },
+      { label: tr.withdrawalsDesk, path: "/withdrawals", icon: <Wallet size={20} /> },
+      { label: tr.auditLogs, path: "/audit", icon: <ShieldAlert size={20} /> },
+      { label: tr.teamManagement, path: "/moderators", icon: <ShieldCheck size={20} /> }
+    );
+  }
 
   useEffect(() => {
     // Delay setting mounted to avoid hydration mismatch AND the strict set-state-in-effect rule
@@ -156,23 +173,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="h-8 w-8 rounded-full border-4 border-[#febc5a]/30 border-t-[#febc5a] animate-spin" />
       </div>
-    );
-  }
-
-  const NAV_ITEMS: { label: string; path: string; icon: React.ReactNode }[] = [
-    { label: tr.overviewHub, path: "/", icon: <LayoutDashboard size={20} /> },
-    { label: tr.companiesDesk, path: "/companies", icon: <Building2 size={20} /> },
-    { label: tr.volunteersDesk, path: "/volunteers", icon: <Users size={20} /> },
-    { label: tr.opportunities, path: "/events", icon: <CalendarDays size={20} /> },
-    { label: tr.reviewOpportunities, path: "/events/pending", icon: <ShieldCheck size={20} /> },
-  ];
-
-  if (adminRole === 'super_admin') {
-    NAV_ITEMS.push(
-      { label: tr.financeDesk, path: "/finance", icon: <Coins size={20} /> },
-      { label: tr.withdrawalsDesk, path: "/withdrawals", icon: <Wallet size={20} /> },
-      { label: tr.auditLogs, path: "/audit", icon: <ShieldAlert size={20} /> },
-      { label: tr.teamManagement, path: "/moderators", icon: <ShieldCheck size={20} /> }
     );
   }
 
