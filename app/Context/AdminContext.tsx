@@ -41,7 +41,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       try {
         const { default: api } = await import("../utils/api");
         const res = await api.get("/admin/me");
-        
+
         const adminData = res.data.admin;
         setAdminRole(adminData.role);
         setAdminName(adminData.username);
@@ -55,18 +55,18 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         // If it's a 500 error, maybe don't clear the session immediately? 
         // But usually a 500 on /me means something is wrong with the session/user anyway.
         if (e.response?.status !== 500) {
-           localStorage.removeItem("adminToken");
-           localStorage.removeItem("adminRole");
-           localStorage.removeItem("adminName");
-           setAdminRole(null);
-           setAdminName(null);
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminRole");
+          localStorage.removeItem("adminName");
+          setAdminRole(null);
+          setAdminName(null);
         }
       } finally {
         setIsLoading(false);
       }
     };
     fn();
-  }, []); // Only run once on mount
+  }, []);
 
   const login = (token: string, role: string, username: string) => {
     localStorage.setItem("adminToken", token);

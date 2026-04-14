@@ -73,11 +73,11 @@ export default function LoginPage() {
       login(token, userRole, admin?.username || username);
     } catch (err) {
       console.error(err);
-      const e = err as { response?: { data?: { error?: string } } };
+      const e = err as { response?: { data?: { error?: string, details?: string } } };
       Swal.fire({
         icon: "error",
         title: tr.accessDenied,
-        text: e.response?.data?.error || tr.invalidCerts,
+        text: e.response?.data?.details || e.response?.data?.error || tr.invalidCerts,
         background: "#1A1A1A",
         color: "#FFFFFF",
       });

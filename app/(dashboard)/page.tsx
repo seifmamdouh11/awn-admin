@@ -7,6 +7,7 @@ import { Users, Building2, CalendarDays, TrendingUp, RefreshCw, BarChart3, PieCh
 import { useLang } from "../Hooks/LangProvider";
 import t from "../translations";
 import dynamic from "next/dynamic";
+import { useAdmin } from "../Context/AdminContext";
 
 const EventStatusChart = dynamic(() => import("../components/Charts").then(m => m.EventStatusChart), { ssr: false });
 const CompanyStatusChart = dynamic(() => import("../components/Charts").then(m => m.CompanyStatusChart), { ssr: false });
@@ -28,6 +29,7 @@ const fadeUp = {
 
 export default function DashboardPage() {
   const { lang } = useLang();
+  const { adminName } = useAdmin();
   const tr = t[lang as keyof typeof t];
 
   const [stats, setStats] = useState<Stats | null>(null);
@@ -94,7 +96,7 @@ export default function DashboardPage() {
       <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
-            {tr.welcomeBack} <span className="text-[#febc5a]">Admin</span>
+            {tr.welcomeBack} <span className="text-[#febc5a]">{adminName || "Admin"}</span>
           </h1>
           <p className="text-foreground/50 mt-1 font-medium text-sm">{tr.platformOverview}</p>
         </div>
