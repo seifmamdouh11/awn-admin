@@ -108,7 +108,7 @@ export default function AuditLogsPage() {
                 ))
               ) : filteredLogs.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-20 text-center text-foreground/30 font-bold">No logs found matching your filters.</td>
+                  <td colSpan={5} className="p-20 text-center text-foreground/30 font-bold">{tr.noLogs}</td>
                 </tr>
               ) : (
                 filteredLogs.map((log) => (

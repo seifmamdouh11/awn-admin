@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { Users, Building2, CalendarDays, TrendingUp, RefreshCw, BarChart3, PieChart, LineChart } from "lucide-react";
+import { Users, Building2, CalendarDays, TrendingUp, RefreshCw, BarChart3, PieChart, LineChart, Coins } from "lucide-react";
 import { useLang } from "../Hooks/LangProvider";
 import t from "../translations";
 import dynamic from "next/dynamic";
@@ -17,7 +17,15 @@ const ApplicationsLineChart = dynamic(() => import("../components/Charts").then(
 
 import { API_URL as API } from "../utils/api";
 
-type Stats = { volunteers: number; pending_companies: number; active_events: number; impact_count: number };
+type Stats = {
+  volunteers: number;
+  pending_companies: number;
+  active_events: number;
+  impact_count: number;
+  total_rev: number;
+  commission_rev: number;
+  subscription_rev: number;
+};
 type StatusRow = { status: string; count: number };
 type MonthRow = { month: string; count: number };
 type ChartData = { companyStatus: StatusRow[]; volunteerStatus: StatusRow[]; eventStatus: StatusRow[]; eventsPerMonth: MonthRow[]; applicationsPerMonth: MonthRow[] };
@@ -75,6 +83,16 @@ export default function DashboardPage() {
     { label: tr.totalVolunteers, value: stats.volunteers, icon: <Users size={22} />, color: "from-blue-500/20 to-transparent", border: "border-blue-500/20", text: "text-blue-500", bg: "bg-blue-500/10" },
     { label: tr.pendingCompanies, value: stats.pending_companies, icon: <Building2 size={22} />, color: "from-amber-500/20 to-transparent", border: "border-amber-500/20", text: "text-amber-500", bg: "bg-amber-500/10" },
     { label: tr.activeOpportunities, value: stats.active_events, icon: <CalendarDays size={22} />, color: "from-emerald-500/20 to-transparent", border: "border-emerald-500/20", text: "text-emerald-500", bg: "bg-emerald-500/10" },
+    {
+      label: tr.totalRevenue,
+      value: `${Number(stats?.total_rev || 0).toLocaleString()} EGP`,
+      icon: <Coins size={22} />,
+      color: "from-[#febc5a]/20 to-transparent",
+      border: "border-[#febc5a]/20",
+      text: "text-[#febc5a]",
+      bg: "bg-[#febc5a]/10",
+      subtext: stats?.total_rev ? `${tr.commissionRev}: ${Number(stats.commission_rev).toLocaleString()} | ${tr.subscriptionRev}: ${Number(stats.subscription_rev).toLocaleString()}` : tr.platformOverview
+    },
     { label: tr.totalImpact, value: stats.impact_count, icon: <TrendingUp size={22} />, color: "from-purple-500/20 to-transparent", border: "border-purple-500/20", text: "text-purple-500", bg: "bg-purple-500/10" },
   ] : [];
 
@@ -106,15 +124,16 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         {loading
-          ? Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-32 animate-pulse rounded-3xl border border-foreground/5 bg-foreground/[0.03]" />)
+          ? Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-32 animate-pulse rounded-3xl border border-foreground/5 bg-foreground/[0.03]" />)
           : statCards.map((card, i) => (
             <motion.div key={card.label} custom={i} initial="hidden" animate="visible" variants={fadeUp}
               className={`relative overflow-hidden rounded-3xl border ${card.border} bg-gradient-to-br ${card.color} p-5 shadow-sm`}>
               <div className={`mb-3 w-fit rounded-2xl ${card.bg} p-2.5 ${card.text}`}>{card.icon}</div>
               <p className="text-xs font-semibold text-foreground/60 leading-snug">{card.label}</p>
-              <p className={`mt-1 text-3xl sm:text-4xl font-black ${card.text}`}>{card.value}</p>
+              <p className={`mt-1 text-2xl font-black ${card.text} truncate`}>{card.value}</p>
+              {card.subtext && <p className="mt-2 text-[10px] font-bold text-foreground/40 uppercase tracking-tight">{card.subtext}</p>}
             </motion.div>
           ))}
       </div>

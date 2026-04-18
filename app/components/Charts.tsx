@@ -238,3 +238,80 @@ export function ApplicationsLineChart({ data }: { data: MonthRow[] }) {
     />
   );
 }
+// ─── Revenue Line Chart ───────────────────────────────────────────────────────
+
+type AnalyticsRow = { month: string; commissions: number; subscriptions: number; total: number };
+
+export function RevenueLineChart({ data }: { data: AnalyticsRow[] }) {
+  const labels = data.map((d) => {
+    const [y, m] = d.month.split("-");
+    return new Date(+y, +m - 1).toLocaleString("default", { month: "short", year: "2-digit" });
+  });
+
+  return (
+    <Line
+      data={{
+        labels,
+        datasets: [
+          {
+            label: "Total Revenue",
+            data: data.map((d) => Number(d.total)),
+            fill: true,
+            backgroundColor: "rgba(254,188,90,0.12)",
+            borderColor: "#febc5a",
+            pointBackgroundColor: "#febc5a",
+            pointRadius: 4,
+            tension: 0.4,
+            borderWidth: 2.5,
+          },
+          {
+            label: "Commissions",
+            data: data.map((d) => Number(d.commissions)),
+            borderColor: "#10b981",
+            pointRadius: 0,
+            tension: 0.4,
+            borderWidth: 1.5,
+            borderDash: [5, 5],
+          },
+          {
+            label: "Subscriptions",
+            data: data.map((d) => Number(d.subscriptions)),
+            borderColor: "#8b5cf6",
+            pointRadius: 0,
+            tension: 0.4,
+            borderWidth: 1.5,
+            borderDash: [3, 3],
+          }
+        ],
+      }}
+      options={{
+        plugins: {
+          legend: { 
+            position: 'top', 
+            labels: { color: "#888", font: { size: 10, weight: "bold" }, usePointStyle: true, padding: 20 } 
+          },
+          tooltip: { 
+            ...tooltipDefaults,
+            callbacks: {
+              label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()} EGP`
+            }
+          },
+        },
+        scales: {
+          x: { grid: { color: "rgba(255,255,255,0.05)" }, ticks: { color: "#666", font: { size: 10 } } },
+          y: { 
+            grid: { color: "rgba(255,255,255,0.05)" }, 
+            ticks: { 
+              color: "#666", 
+              font: { size: 10 },
+              callback: (val) => `${Number(val).toLocaleString()} EGP`
+            }, 
+            beginAtZero: true 
+          },
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+      }}
+    />
+  );
+}

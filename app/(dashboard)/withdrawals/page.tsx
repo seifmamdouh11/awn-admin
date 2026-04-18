@@ -165,9 +165,9 @@ export default function WithdrawalsPage() {
                 <TrendingUp size={20} />
             </div>
             <div>
-                <p className="text-[10px] uppercase font-black tracking-widest text-[#d97706]/70">{isRTL ? "إجمالي العمولات" : "Platform Revenue"}</p>
+                <p className="text-[10px] uppercase font-black tracking-widest text-[#d97706]/70">{tr.platformRevenue}</p>
                 <p className="text-xl font-black text-[#d97706]">
-                    {withdrawals.filter(w => w.status === 'approved').reduce((acc, w) => acc + Number(w.admin_commission), 0).toLocaleString()} <span className="text-xs">EGP</span>
+                    {withdrawals.filter(w => w.status === 'approved').reduce((acc, w) => acc + Number(w.admin_commission), 0).toLocaleString()} <span className="text-xs">{tr.egp}</span>
                 </p>
             </div>
          </div>
@@ -180,13 +180,13 @@ export default function WithdrawalsPage() {
           <table className="w-full text-left" dir={isRTL ? "rtl" : "ltr"}>
             <thead className="bg-foreground/[0.03]">
               <tr className="text-[10px] font-black uppercase tracking-widest text-foreground/40 border-b border-foreground/5">
-                <th className="px-6 py-5">{isRTL ? "المتطوع" : "Volunteer"}</th>
-                <th className="px-6 py-5">{isRTL ? "طريقة السحب" : "Destination"}</th>
+                <th className="px-6 py-5">{tr.volunteer}</th>
+                <th className="px-6 py-5">{tr.destination}</th>
                 <th className="px-6 py-5">{tr.amountRequested}</th>
                 <th className="px-6 py-5">{tr.adminFee}</th>
                 <th className="px-6 py-5 font-bold text-[#d97706] bg-[#febc5a]/5">{tr.netToPay}</th>
                 <th className="px-6 py-5 text-center">{tr.status}</th>
-                <th className="px-6 py-5 text-center">{lang === 'ar' ? 'الإجراءات' : 'Actions'}</th>
+                <th className="px-6 py-5 text-center">{tr.actions}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-foreground/5">
@@ -229,20 +229,20 @@ export default function WithdrawalsPage() {
                            </div>
                            <div>
                               <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30">
-                                {w.method === 'wallet' ? (isRTL ? 'محفظة' : 'Wallet') : w.method === 'paypal' ? 'PayPal' : (isRTL ? 'بنك' : 'Bank')}
+                                {w.method === 'wallet' ? (isRTL ? tr.phone : 'Wallet') : w.method === 'paypal' ? 'PayPal' : (isRTL ? 'بنك' : 'Bank')}
                               </p>
                               <p className="text-xs font-bold text-foreground/70">{w.account_details || w.phone}</p>
                            </div>
                         </div>
                       </td>
                       <td className="px-6 py-5 font-bold text-sm text-foreground/70">
-                         {Number(w.amount_requested).toLocaleString()} <span className="text-[10px] opacity-40">EGP</span>
+                         {Number(w.amount_requested).toLocaleString()} <span className="text-[10px] opacity-40">{tr.egp}</span>
                       </td>
                       <td className="px-6 py-5 font-bold text-sm text-foreground/40">
-                         {Number(w.admin_commission).toFixed(2)} <span className="text-[10px] opacity-40">EGP</span>
+                         {Number(w.admin_commission).toFixed(2)} <span className="text-[10px] opacity-40">{tr.egp}</span>
                       </td>
                       <td className="px-6 py-5 font-black text-sm text-[#d97706] bg-[#febc5a]/5">
-                         {Number(w.net_amount).toLocaleString()} <span className="text-[10px] opacity-60">EGP</span>
+                         {Number(w.net_amount).toLocaleString()} <span className="text-[10px] opacity-60">{tr.egp}</span>
                       </td>
                       <td className="px-6 py-5">
                           <div className="flex justify-center">
@@ -261,7 +261,7 @@ export default function WithdrawalsPage() {
                                  title={tr.confirmPay}
                                  className="h-9 px-4 rounded-xl bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all"
                                >
-                                 {isRTL ? "صرف" : "Pay"}
+                                 {tr.pay}
                                </button>
                                <button 
                                  onClick={() => handleAction(w.id, "rejected")}

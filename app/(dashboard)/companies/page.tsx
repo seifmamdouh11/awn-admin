@@ -59,7 +59,7 @@ export default function CompaniesPage() {
   const updateStatus = async (id: number, currentStatus: string) => {
     const statusOptions: Record<string, Record<string, string>> = {
       pending: { active: tr.active, blocked: tr.blocked },
-      active:  { blocked: tr.blocked, pending: tr.pending },
+      active: { blocked: tr.blocked, pending: tr.pending },
       blocked: { active: tr.active, pending: tr.pending },
     };
     const opts = statusOptions[currentStatus] ?? { active: tr.active, pending: tr.pending, blocked: tr.blocked };
@@ -116,10 +116,10 @@ export default function CompaniesPage() {
         </div>
         <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
           className="rounded-2xl border border-foreground/10 bg-foreground/5 px-4 py-3.5 text-sm outline-none cursor-pointer transition focus:border-[#febc5a] text-foreground">
-          <option value="all">{tr.allStatuses}</option>
-          <option value="pending">{tr.pending}</option>
-          <option value="active">{tr.active}</option>
-          <option value="blocked">{tr.blocked}</option>
+          <option className="text-black " value="all">{tr.allStatuses}</option>
+          <option className="text-black " value="pending">{tr.pending}</option>
+          <option className="text-black " value="active">{tr.active}</option>
+          <option className="text-black " value="blocked">{tr.blocked}</option>
         </select>
       </motion.div>
 
@@ -136,7 +136,7 @@ export default function CompaniesPage() {
                   <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-[#febc5a]/20 to-amber-500/5 border border-[#febc5a]/20 flex items-center justify-center text-[#febc5a] font-black text-lg shrink-0">
                     {c.company_name?.charAt(0).toUpperCase()}
                   </div>
-                  <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[c.status] ?? "bg-foreground/5 text-foreground/50 border-foreground/10"}`}>{c.status}</span>
+                  <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[c.status] ?? "bg-foreground/5 text-foreground/50 border-foreground/10"}`}>{tr[c.status as keyof typeof tr] || c.status}</span>
                 </div>
                 <h3 className="font-bold text-foreground text-base tracking-tight truncate">{c.company_name}</h3>
                 <p className="text-sm text-foreground/50 mt-0.5 truncate">{c.email}</p>
@@ -171,7 +171,7 @@ export default function CompaniesPage() {
                   </div>
                   <div>
                     <h3 className="text-xl font-black text-foreground">{selected.company_name}</h3>
-                    <span className={`mt-1 inline-block rounded-full border px-3 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[selected.status] ?? ""}`}>{selected.status}</span>
+                    <span className={`mt-1 inline-block rounded-full border px-3 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[selected.status] ?? ""}`}>{tr[selected.status as keyof typeof tr] || selected.status}</span>
                   </div>
                 </div>
 
@@ -182,7 +182,7 @@ export default function CompaniesPage() {
                     { icon: <Building2 size={15} />, label: tr.industry, value: selected.industry || "—" },
                     { icon: <MapPin size={15} />, label: tr.city, value: selected.city || "—" },
                     { icon: <Globe size={15} />, label: tr.website, value: selected.website || "—" },
-                    { icon: <Calendar size={15} />, label: tr.joined, value: new Date(selected.created_at).toLocaleDateString() },
+                    { icon: <Calendar size={15} />, label: tr.joined, value: new Date(selected.created_at).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' }) },
                   ].map((row) => (
                     <div key={row.label} className="flex items-center gap-4 px-4 py-3.5">
                       <span className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center text-foreground/50 shrink-0">{row.icon}</span>

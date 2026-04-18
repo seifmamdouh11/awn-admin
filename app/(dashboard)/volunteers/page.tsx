@@ -128,7 +128,7 @@ export default function VolunteersPage() {
                   <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-500/20 flex items-center justify-center text-blue-500 font-black shrink-0">
                     {v.first_name?.charAt(0).toUpperCase()}
                   </div>
-                  <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[v.status] ?? "bg-foreground/5 text-foreground/50 border-foreground/10"}`}>{v.status}</span>
+                  <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[v.status] ?? "bg-foreground/5 text-foreground/50 border-foreground/10"}`}>{tr[v.status as keyof typeof tr] || v.status}</span>
                 </div>
                 <h3 className="font-bold text-foreground text-base tracking-tight">{v.first_name} {v.last_name}</h3>
                 <p className="text-sm text-foreground/50 mt-0.5 truncate">{v.email}</p>
@@ -170,7 +170,7 @@ export default function VolunteersPage() {
                       </div>
                     )}
                     <div className="mt-1.5">
-                      <span className={`inline-block rounded-full border px-3 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[selected.status] ?? ""}`}>{selected.status}</span>
+                      <span className={`inline-block rounded-full border px-3 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[selected.status] ?? ""}`}>{tr[selected.status as keyof typeof tr] || selected.status}</span>
                     </div>
                   </div>
                 </div>
@@ -180,8 +180,8 @@ export default function VolunteersPage() {
                     { icon: <Mail size={15} />, label: tr.email, value: selected.email },
                     { icon: <Phone size={15} />, label: tr.phone, value: selected.phone || "—" },
                     { icon: <User size={15} />, label: tr.gender, value: selected.gender || "—" },
-                    { icon: <Calendar size={15} />, label: tr.dateOfBirth, value: selected.date_of_birth ? new Date(selected.date_of_birth).toLocaleDateString() : "—" },
-                    { icon: <Calendar size={15} />, label: tr.joined, value: new Date(selected.created_at).toLocaleDateString() },
+                    { icon: <Calendar size={15} />, label: tr.dateOfBirth, value: selected.date_of_birth ? new Date(selected.date_of_birth).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : "—" },
+                    { icon: <Calendar size={15} />, label: tr.joined, value: new Date(selected.created_at).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' }) },
                   ].map((row) => (
                     <div key={row.label} className="flex items-center gap-4 px-4 py-3.5">
                       <span className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center text-foreground/50 shrink-0">{row.icon}</span>
