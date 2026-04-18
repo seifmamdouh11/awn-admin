@@ -110,7 +110,7 @@ const SidebarContent = ({
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 space-y-1 overflow-y-hidden custom-scrollbar pr-2 -mr-2">
+      <nav className="flex-1 space-y-1 overflow-x-hidden custom-scrollbar no-scrollbar pr-2 -mr-2">
         {NAV_ITEMS.map((group) => {
           const isExpanded = expandedGroups.includes(group.label);
           const hasActiveChild = group.items?.some(item => item.path === pathname);
