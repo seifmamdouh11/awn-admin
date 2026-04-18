@@ -53,29 +53,6 @@
 
 ---
 
-## 🏁 Quick Start | البدء السريع
-
-### 1. Prerequisites
-- Node.js 18.x or higher
-- NPM or Yarn
-
-### 2. Environment Setup
-Create a `.env.local` file in the root directory:
-```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-```
-
-### 3. Installation
-```bash
-npm install
-```
-
-### 4. Run Development Server
-```bash
-npm run dev
-```
-
----
 
 <div align="center">
   <p>Built with ❤️ for the Volunteering Community</p>
