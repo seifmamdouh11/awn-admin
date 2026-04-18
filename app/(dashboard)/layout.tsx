@@ -424,7 +424,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Page */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden relative">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar relative">
           <div className="absolute top-0 end-0 w-[600px] h-[600px] bg-[#febc5a]/5 rounded-full blur-[120px] pointer-events-none" />
           <div className="relative z-10 p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto pb-20">
             {children}
