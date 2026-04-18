@@ -293,7 +293,7 @@ export function RevenueLineChart({ data }: { data: AnalyticsRow[] }) {
           tooltip: { 
             ...tooltipDefaults,
             callbacks: {
-              label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()} EGP`
+              label: (ctx) => ` ${ctx.dataset.label}: ${(ctx.parsed.y ?? 0).toLocaleString()} EGP`
             }
           },
         },
