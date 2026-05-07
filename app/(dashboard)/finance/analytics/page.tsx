@@ -14,7 +14,11 @@ import Link from "next/link";
 import { useLang } from "../../../Hooks/LangProvider";
 import t from "../../../translations";
 import api from "../../../utils/api";
-import { RevenueLineChart } from "../../../components/Charts";
+import dynamic from "next/dynamic";
+const RevenueLineChart = dynamic(() => import("../../../components/Charts").then(mod => mod.RevenueLineChart), {
+  ssr: false,
+  loading: () => <div className="h-full flex items-center justify-center animate-pulse text-foreground/40 text-xs font-bold uppercase tracking-widest">Loading chart data...</div>
+});
 
 const fadeUp = {
   hidden: { opacity: 0, y: 15 },

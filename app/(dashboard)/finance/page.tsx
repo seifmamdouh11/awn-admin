@@ -8,7 +8,8 @@ import {
    CheckCircle2,
    XCircle,
    Info,
-   TrendingUp
+   TrendingUp,
+   Download
 } from "lucide-react";
 import Link from "next/link";
 import Swal from "sweetalert2";
@@ -49,6 +50,7 @@ export default function FinancePage() {
    const [loading, setLoading] = useState(true);
 
    const [activeTab, setActiveTab] = useState<'commissions' | 'subscriptions' | 'withdrawals'>('commissions');
+   const [downloadLoading, setDownloadLoading] = useState(false);
 
    const filteredEarnings = earnings.filter(earn => {
       if (activeTab === 'commissions') return earn.earning_type === 'Opportunity Commission';
@@ -77,6 +79,27 @@ export default function FinancePage() {
    useEffect(() => {
       fetchData();
    }, [fetchData]);
+
+   const handleDownloadReport = async () => {
+      setDownloadLoading(true);
+      try {
+         const response = await api.get("/admin-finance/transactions-report/pdf", { responseType: "blob" });
+         const blob = new Blob([response.data], { type: "application/pdf" });
+         const url = window.URL.createObjectURL(blob);
+         const link = document.createElement("a");
+         link.href = url;
+         link.download = `awn-transactions-report-${new Date().toISOString().slice(0, 10)}.pdf`;
+         document.body.appendChild(link);
+         link.click();
+         link.remove();
+         window.URL.revokeObjectURL(url);
+      } catch (err) {
+         console.error(err);
+         Swal.fire({ icon: 'error', title: tr.error, text: tr.reportDownloadError || 'Unable to download report.' });
+      } finally {
+         setDownloadLoading(false);
+      }
+   };
 
    const handleVerify = async (id: number, status: 'APPROVED' | 'REJECTED') => {
       const { value: notes } = await Swal.fire({
@@ -121,7 +144,15 @@ export default function FinancePage() {
                <h1 className="text-3xl font-black text-foreground tracking-tight">{tr.financeDesk}</h1>
                <p className="text-foreground/60 font-medium">{tr.withdrawalsSubtitle}</p>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 flex-wrap">
+               <button
+                  onClick={handleDownloadReport}
+                  disabled={downloadLoading}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-foreground/5 text-foreground font-bold text-xs uppercase tracking-widest transition ${downloadLoading ? 'cursor-not-allowed opacity-60' : 'hover:bg-foreground/10'}`}
+               >
+                  <Download size={16} />
+                  {downloadLoading ? tr.downloadingReport : tr.downloadReport}
+               </button>
                <Link 
                   href="/finance/analytics" 
                   className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#febc5a] text-black font-black text-xs uppercase tracking-widest shadow-lg shadow-[#febc5a]/20 hover:scale-105 transition-transform"

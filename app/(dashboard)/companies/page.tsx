@@ -116,10 +116,10 @@ export default function CompaniesPage() {
         </div>
         <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
           className="rounded-2xl border border-foreground/10 bg-foreground/5 px-4 py-3.5 text-sm outline-none cursor-pointer transition focus:border-[#febc5a] text-foreground">
-          <option className="text-black " value="all">{tr.allStatuses}</option>
-          <option className="text-black " value="pending">{tr.pending}</option>
-          <option className="text-black " value="active">{tr.active}</option>
-          <option className="text-black " value="blocked">{tr.blocked}</option>
+          <option value="all">{tr.allStatuses}</option>
+          <option value="pending">{tr.pending}</option>
+          <option value="active">{tr.active}</option>
+          <option value="blocked">{tr.blocked}</option>
         </select>
       </motion.div>
 
