@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Search, RefreshCw, Mail, Phone, Calendar, X, Star, User, CheckCircle, MessageSquare } from "lucide-react";
+import { Users, Search, RefreshCw, Mail, Phone, Calendar, X, Star, User, CheckCircle, MessageSquare, ShieldCheck, Image as ImageIcon, CreditCard } from "lucide-react";
+
+
 import { useLang } from "../../Hooks/LangProvider";
 import t from "../../translations";
 import { API_URL as API } from "../../utils/api";
@@ -17,11 +19,17 @@ type Volunteer = {
   phone: string;
   status: string;
   gender?: string;
+  national_id?: string;
   date_of_birth?: string;
+
   description?: string;
   created_at: string;
   average_rating?: number;
+  is_id_verified?: number;
+  national_id_front?: string;
+  national_id_back?: string;
 };
+
 
 const STATUS_STYLES: Record<string, string> = {
   active: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
@@ -80,6 +88,29 @@ export default function VolunteersPage() {
     }
   };
 
+  const verifyId = async (id: number) => {
+    const result = await Swal.fire({
+      title: tr.verifyIdConfirm,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#febc5a",
+      confirmButtonText: tr.verifyId,
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.patch(`${API}/admin/volunteers/${id}/verify-id`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      Swal.fire({ icon: "success", title: tr.verifyIdSuccess, timer: 1500, showConfirmButton: false });
+      fetchVolunteers();
+      setSelected(null);
+    } catch {
+      Swal.fire({ icon: "error", title: tr.failedVerifyId });
+    }
+  };
+
+
   const filtered = volunteers.filter((v) => {
     const name = `${v.first_name} ${v.last_name}`.toLowerCase();
     const matchSearch = name.includes(search.toLowerCase()) || v.email?.toLowerCase().includes(search.toLowerCase());
@@ -125,11 +156,24 @@ export default function VolunteersPage() {
               <motion.div key={v.id} custom={i} initial="hidden" animate="visible" variants={fadeUp} onClick={() => setSelected(v)}
                 className="group cursor-pointer rounded-[2rem] border border-foreground/10 bg-background/80 backdrop-blur-sm p-5 sm:p-6 shadow-sm transition-all hover:shadow-lg hover:border-blue-500/20 hover:-translate-y-1">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-500/20 flex items-center justify-center text-blue-500 font-black shrink-0">
-                    {v.first_name?.charAt(0).toUpperCase()}
+                  <div className="relative">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-500/20 flex items-center justify-center text-blue-500 font-black shrink-0">
+                      {v.first_name?.charAt(0).toUpperCase()}
+                    </div>
+                    {v.is_id_verified === 1 && (
+                      <div className="absolute -bottom-1 -right-1 h-5 w-5 rounded-full bg-blue-500 border-2 border-background flex items-center justify-center text-white shadow-sm">
+                        <ShieldCheck size={10} />
+                      </div>
+                    )}
                   </div>
-                  <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[v.status] ?? "bg-foreground/5 text-foreground/50 border-foreground/10"}`}>{tr[v.status as keyof typeof tr] || v.status}</span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[v.status] ?? "bg-foreground/5 text-foreground/50 border-foreground/10"}`}>{tr[v.status as keyof typeof tr] || v.status}</span>
+                    {v.is_id_verified === 1 && (
+                      <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-tighter text-blue-500">{tr.idVerified}</span>
+                    )}
+                  </div>
                 </div>
+
                 <h3 className="font-bold text-foreground text-base tracking-tight">{v.first_name} {v.last_name}</h3>
                 <p className="text-sm text-foreground/50 mt-0.5 truncate">{v.email}</p>
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-foreground/40">
@@ -179,7 +223,9 @@ export default function VolunteersPage() {
                   {[
                     { icon: <Mail size={15} />, label: tr.email, value: selected.email },
                     { icon: <Phone size={15} />, label: tr.phone, value: selected.phone || "—" },
+                    { icon: <CreditCard size={15} />, label: tr.nationalId, value: selected.national_id || "—" },
                     { icon: <User size={15} />, label: tr.gender, value: selected.gender || "—" },
+
                     { icon: <Calendar size={15} />, label: tr.dateOfBirth, value: selected.date_of_birth ? new Date(selected.date_of_birth).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' }) : "—" },
                     { icon: <Calendar size={15} />, label: tr.joined, value: new Date(selected.created_at).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' }) },
                   ].map((row) => (
@@ -200,10 +246,57 @@ export default function VolunteersPage() {
                   </div>
                 )}
 
-                <button onClick={() => updateStatus(selected.id, selected.status)}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#febc5a] py-4 font-bold text-black shadow-md shadow-[#febc5a]/20 transition hover:bg-amber-400 active:scale-[0.98]">
-                  <CheckCircle size={18} /> {tr.changeStatus}
-                </button>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-foreground/40 px-1"><ImageIcon size={13} /><p className="text-[10px] font-bold uppercase tracking-widest">{tr.idCards}</p></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="group relative aspect-video rounded-2xl border border-foreground/10 bg-foreground/5 overflow-hidden cursor-zoom-in">
+                      {selected.national_id_front ? (
+                        <img 
+                          src={selected.national_id_front} 
+                          alt="Front" 
+                          className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                          onClick={() => window.open(selected.national_id_front, '_blank')}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-foreground/20 gap-1">
+                          <ImageIcon size={20} />
+                          <span className="text-[10px] font-bold">{tr.idFront}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="group relative aspect-video rounded-2xl border border-foreground/10 bg-foreground/5 overflow-hidden cursor-zoom-in">
+                      {selected.national_id_back ? (
+                        <img 
+                          src={selected.national_id_back} 
+                          alt="Back" 
+                          className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
+                          onClick={() => window.open(selected.national_id_back, '_blank')}
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-foreground/20 gap-1">
+                          <ImageIcon size={20} />
+                          <span className="text-[10px] font-bold">{tr.idBack}</span>
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3 pt-2">
+                  <button onClick={() => updateStatus(selected.id, selected.status)}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#febc5a] py-4 font-bold text-black shadow-md shadow-[#febc5a]/20 transition hover:bg-amber-400 active:scale-[0.98]">
+                    <CheckCircle size={18} /> {tr.changeStatus}
+                  </button>
+
+                  {selected.is_id_verified !== 1 && (
+                    <button onClick={() => verifyId(selected.id)}
+                      className="flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-500 py-4 font-bold text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-600 active:scale-[0.98]">
+                      <ShieldCheck size={18} /> {tr.verifyId}
+                    </button>
+                  )}
+                </div>
+
               </div>
             </motion.div>
           </>

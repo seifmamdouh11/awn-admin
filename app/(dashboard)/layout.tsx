@@ -350,7 +350,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
       {/* ── DESKTOP SIDEBAR ── */}
       <motion.aside
         dir={isRTL ? "rtl" : "ltr"}
-        className={`hidden lg:flex fixed top-0 ${isRTL ? "right-0 border-s" : "left-0 border-e"} z-50 h-screen flex-col bg-[#222222] border-white/5 shadow-2xl ${isCollapsed ? "p-4" : "p-5"}`}
+        className={`hidden lg:flex fixed top-0 ${isRTL ? "right-0 border-s" : "left-0 border-e"} z-10 h-screen flex-col bg-[#222222] border-white/5 shadow-2xl ${isCollapsed ? "p-4" : "p-5"}`}
         initial={false}
         animate={{ width: isCollapsed ? 80 : 256 }}
         transition={{ duration: 0.3, ease: "easeInOut" }}

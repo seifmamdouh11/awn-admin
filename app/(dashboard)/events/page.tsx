@@ -16,12 +16,14 @@ type Event = {
   status: string;
   event_type: string;
   location?: string;
+  address?: string; // Fallback for some backend versions
   description?: string;
   start_time: string;
   end_time: string;
   created_at: string;
   is_deleted: number;
   max_volunteers?: number;
+  capacity?: number; // Fallback for some backend versions
 };
 
 const STATUS_STYLES: Record<string, string> = {
@@ -136,7 +138,7 @@ export default function EventsPage() {
                 <p className="text-xs text-foreground/50 font-medium">{e.company_name}</p>
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-foreground/40">
                   <Clock size={11} /><span>{new Date(e.start_time).toLocaleDateString()}</span>
-                  {e.location && <><span>·</span><MapPin size={11} /><span className="truncate">{e.location}</span></>}
+                  {(e.location || e.address) && <><span>·</span><MapPin size={11} /><span className="truncate">{e.location || e.address}</span></>}
                 </div>
               </motion.div>
             ))}
@@ -169,10 +171,10 @@ export default function EventsPage() {
                 <div className="rounded-[1.5rem] border border-foreground/10 bg-foreground/[0.02] divide-y divide-foreground/5 overflow-hidden">
                   {[
                     { icon: <Building2 size={15} />, label: tr.company, value: selected.company_name },
-                    { icon: <MapPin size={15} />, label: tr.location, value: selected.location || "—" },
+                    { icon: <MapPin size={15} />, label: tr.location, value: selected.location || selected.address || "—" },
                     { icon: <Clock size={15} />, label: tr.start, value: new Date(selected.start_time).toLocaleString() },
                     { icon: <Clock size={15} />, label: tr.end, value: new Date(selected.end_time).toLocaleString() },
-                    { icon: <Tag size={15} />, label: tr.maxVolunteers, value: selected.max_volunteers ? `${selected.max_volunteers} ${tr.spots}` : "—" },
+                    { icon: <Tag size={15} />, label: tr.maxVolunteers, value: (selected.max_volunteers || selected.capacity) ? `${selected.max_volunteers || selected.capacity} ${tr.spots}` : "—" },
                     { icon: <CalendarDays size={15} />, label: tr.posted, value: new Date(selected.created_at).toLocaleDateString() },
                   ].map((row) => (
                     <div key={row.label} className="flex items-center gap-4 px-4 py-3.5">

@@ -15,11 +15,13 @@ type Event = {
   company_name: string;
   event_type: string;
   location?: string;
+  address?: string; // Fallback
   description?: string;
   start_time: string;
   end_time: string;
   created_at: string;
   max_volunteers?: number;
+  capacity?: number; // Fallback
 };
 
 const fadeUp = {
@@ -206,10 +208,10 @@ export default function PendingEventsPage() {
                 <div className="rounded-[1.5rem] border border-foreground/10 bg-foreground/[0.02] divide-y divide-foreground/5 overflow-hidden">
                   {[
                     { icon: <Building2 size={15} />, label: tr.company, value: selected.company_name },
-                    { icon: <MapPin size={15} />, label: tr.location, value: selected.location || "—" },
+                    { icon: <MapPin size={15} />, label: tr.location, value: selected.location || selected.address || "—" },
                     { icon: <Clock size={15} />, label: tr.start, value: new Date(selected.start_time).toLocaleString() },
                     { icon: <Clock size={15} />, label: tr.end, value: new Date(selected.end_time).toLocaleString() },
-                    { icon: <Tag size={15} />, label: tr.maxVolunteers, value: selected.max_volunteers ? `${selected.max_volunteers} ${tr.spots}` : "—" },
+                    { icon: <Tag size={15} />, label: tr.maxVolunteers, value: (selected.max_volunteers || selected.capacity) ? `${selected.max_volunteers || selected.capacity} ${tr.spots}` : "—" },
                   ].map((row) => (
                     <div key={row.label} className="flex items-center gap-4 px-4 py-3.5">
                       <span className="w-8 h-8 rounded-xl bg-foreground/5 flex items-center justify-center text-foreground/50 shrink-0">{row.icon}</span>

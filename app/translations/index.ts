@@ -52,8 +52,19 @@ const t = {
     noVolunteers: "No volunteers match your filters.",
     volunteerProfile: "Volunteer Profile",
     gender: "Gender",
+    nationalId: "National ID",
     dateOfBirth: "Date of Birth",
+
     noRatings: "No ratings yet",
+    idVerified: "ID Verified",
+    verifyId: "Verify Identity",
+    idCards: "Identification Documents",
+    idFront: "National ID (Front)",
+    idBack: "National ID (Back)",
+    verifyIdConfirm: "Verify this volunteer's identity?",
+    verifyIdSuccess: "Volunteer identity verified!",
+    failedVerifyId: "Failed to verify identity",
+
 
     // Events
     activeEvents: "active opportunities",
@@ -268,8 +279,19 @@ const t = {
     noVolunteers: "لا يوجد متطوعون يطابقون الفلاتر.",
     volunteerProfile: "ملف المتطوع",
     gender: "الجنس",
+    nationalId: "رقم الهوية الوطنية",
     dateOfBirth: "تاريخ الميلاد",
+
     noRatings: "لا توجد تقييمات بعد",
+    idVerified: "هوية موثقة",
+    verifyId: "توثيق الهوية",
+    idCards: "وثائق الهوية",
+    idFront: "الهوية الوطنية (الأمام)",
+    idBack: "الهوية الوطنية (الخلف)",
+    verifyIdConfirm: "هل تريد توثيق هوية هذا المتطوع؟",
+    verifyIdSuccess: "تم توثيق هوية المتطوع بنجاح!",
+    failedVerifyId: "فشل في توثيق الهوية",
+
 
     // Events
     activeEvents: "فرصة نشطة",

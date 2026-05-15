@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, RefreshCw, Building2, MapPin, Phone, Mail, Globe, X, Calendar, CheckCircle } from "lucide-react";
+import { Search, RefreshCw, Building2, MapPin, Phone, Mail, Globe, X, Calendar, CheckCircle, FileText, BadgeCheck } from "lucide-react";
 import { useLang } from "../../Hooks/LangProvider";
 import t from "../../translations";
 import { API_URL as API } from "../../utils/api";
@@ -20,6 +20,10 @@ type Company = {
   city?: string;
   website?: string;
   description?: string;
+  logo_url?: string;
+  doc_url?: string;
+  doc_note?: string;
+  is_verified?: number | boolean;
 };
 
 const STATUS_STYLES: Record<string, string> = {
@@ -86,6 +90,26 @@ export default function CompaniesPage() {
     }
   };
 
+  const toggleVerification = async (id: number) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const res = await axios.patch(`${API}/admin/companies/${id}/verify`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      
+      Swal.fire({ 
+        icon: "success", 
+        title: res.data.is_verified ? tr.verified : tr.pending, 
+        timer: 1200, 
+        showConfirmButton: false 
+      });
+      
+      fetchCompanies();
+      setSelected(null);
+    } catch (err) {
+      console.error(err);
+      Swal.fire({ icon: "error", title: "Action Failed" });
+    }
+  };
+
   const filtered = companies.filter((c) => {
     const matchSearch = c.company_name?.toLowerCase().includes(search.toLowerCase()) || c.email?.toLowerCase().includes(search.toLowerCase());
     return matchSearch && (filterStatus === "all" || c.status === filterStatus);
@@ -133,12 +157,25 @@ export default function CompaniesPage() {
               <motion.div key={c.id} custom={i} initial="hidden" animate="visible" variants={fadeUp} onClick={() => setSelected(c)}
                 className="group cursor-pointer rounded-[2rem] border border-foreground/10 bg-background/80 backdrop-blur-sm p-5 sm:p-6 shadow-sm transition-all hover:shadow-lg hover:border-[#febc5a]/30 hover:-translate-y-1">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-[#febc5a]/20 to-amber-500/5 border border-[#febc5a]/20 flex items-center justify-center text-[#febc5a] font-black text-lg shrink-0">
-                    {c.company_name?.charAt(0).toUpperCase()}
+                  <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-[#febc5a]/20 to-amber-500/5 border border-[#febc5a]/20 flex items-center justify-center text-[#febc5a] font-black text-lg shrink-0 overflow-hidden">
+                    {c.logo_url ? (
+                      <img src={c.logo_url} alt={c.company_name} className="h-full w-full object-cover" />
+                    ) : (
+                      c.company_name?.charAt(0).toUpperCase()
+                    )}
                   </div>
-                  <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[c.status] ?? "bg-foreground/5 text-foreground/50 border-foreground/10"}`}>{tr[c.status as keyof typeof tr] || c.status}</span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[c.status] ?? "bg-foreground/5 text-foreground/50 border-foreground/10"}`}>{tr[c.status as keyof typeof tr] || c.status}</span>
+                    {c.is_verified ? (
+                       <span className="flex items-center gap-1 text-[10px] font-black text-blue-500 uppercase tracking-tighter bg-blue-500/10 px-1.5 py-0.5 rounded-md border border-blue-500/20">
+                          <BadgeCheck size={10} /> Verified
+                       </span>
+                    ) : null}
+                  </div>
                 </div>
-                <h3 className="font-bold text-foreground text-base tracking-tight truncate">{c.company_name}</h3>
+                <h3 className="font-bold text-foreground text-base tracking-tight truncate flex items-center gap-1">
+                  {c.company_name}
+                </h3>
                 <p className="text-sm text-foreground/50 mt-0.5 truncate">{c.email}</p>
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-foreground/40">
                   {c.industry && <span>{c.industry}</span>}
@@ -166,12 +203,23 @@ export default function CompaniesPage() {
                 </div>
 
                 <div className="flex flex-col items-center text-center gap-3 py-2">
-                  <div className="h-20 w-20 rounded-[1.5rem] bg-gradient-to-br from-[#febc5a] to-amber-600 flex items-center justify-center text-black font-black text-3xl shadow-xl shadow-[#febc5a]/20">
-                    {selected.company_name?.charAt(0).toUpperCase()}
+                  <div className="h-20 w-20 rounded-[1.5rem] bg-gradient-to-br from-[#febc5a] to-amber-600 flex items-center justify-center text-black font-black text-3xl shadow-xl shadow-[#febc5a]/20 overflow-hidden">
+                    {selected.logo_url ? (
+                      <img src={selected.logo_url} alt={selected.company_name} className="h-full w-full object-cover" />
+                    ) : (
+                      selected.company_name?.charAt(0).toUpperCase()
+                    )}
                   </div>
                   <div>
                     <h3 className="text-xl font-black text-foreground">{selected.company_name}</h3>
-                    <span className={`mt-1 inline-block rounded-full border px-3 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[selected.status] ?? ""}`}>{tr[selected.status as keyof typeof tr] || selected.status}</span>
+                    <div className="flex items-center justify-center gap-2 mt-1">
+                      <span className={`rounded-full border px-3 py-0.5 text-xs font-bold capitalize ${STATUS_STYLES[selected.status] ?? ""}`}>{tr[selected.status as keyof typeof tr] || selected.status}</span>
+                      {selected.is_verified ? (
+                         <span className="flex items-center gap-1 text-[10px] font-black text-blue-500 uppercase tracking-tighter bg-blue-500/10 px-2 py-1 rounded-full border border-blue-500/20">
+                            <BadgeCheck size={12} /> Verified Account
+                         </span>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
 
@@ -201,10 +249,38 @@ export default function CompaniesPage() {
                   </div>
                 )}
 
-                <button onClick={() => updateStatus(selected.id, selected.status)}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#febc5a] py-4 font-bold text-black shadow-md shadow-[#febc5a]/20 transition hover:bg-amber-400 active:scale-[0.98]">
-                  <CheckCircle size={18} /> {tr.changeStatus}
-                </button>
+                {selected.doc_url && (
+                  <div className="rounded-[1.5rem] border border-foreground/10 bg-foreground/[0.02] p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-3">{isRTL ? "المستندات والتحقق" : "Documents & Verification"}</p>
+                    <a href={selected.doc_url} target="_blank" rel="noreferrer" 
+                      className="flex items-center gap-3 p-3 rounded-2xl bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 transition group">
+                      <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+                        <FileText size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-foreground">{isRTL ? "عرض الملف المرفق" : "View Attached Document"}</p>
+                        <p className="text-[10px] text-foreground/40 truncate">{selected.doc_url.split('/').pop()}</p>
+                      </div>
+                    </a>
+                    {selected.doc_note && (
+                      <div className="mt-3 p-3 rounded-xl bg-amber-500/5 border border-amber-500/10 text-[13px] text-foreground/70 leading-relaxed italic">
+                        "{selected.doc_note}"
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-2">
+                  <button onClick={() => updateStatus(selected.id, selected.status)}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#febc5a] py-4 font-bold text-black shadow-md shadow-[#febc5a]/20 transition hover:bg-amber-400 active:scale-[0.98]">
+                    <CheckCircle size={18} /> {tr.changeStatus}
+                  </button>
+                  
+                  <button onClick={() => toggleVerification(selected.id)}
+                    className={`flex w-full items-center justify-center gap-2 rounded-2xl py-4 font-bold transition active:scale-[0.98] border-2 ${selected.is_verified ? "border-red-500/50 text-red-500 bg-red-500/5 hover:bg-red-500/10" : "border-blue-500/50 text-blue-500 bg-blue-500/5 hover:bg-blue-500/10"}`}>
+                    <BadgeCheck size={18} /> {selected.is_verified ? (isRTL ? "إلغاء التوثيق" : "Remove Verification") : (isRTL ? "توثيق الشركة" : "Verify Company")}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </>
