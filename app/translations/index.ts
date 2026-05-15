@@ -45,6 +45,7 @@ const t = {
     joined: "Joined",
     about: "About",
     changeStatus: "Change Status",
+    verified: "Verified",
 
     // Volunteers
     membersRegistered: "members registered",
@@ -272,6 +273,7 @@ const t = {
     joined: "تاريخ الانضمام",
     about: "عن الشركة",
     changeStatus: "تغيير الحالة",
+    verified: "تم التوثيق",
 
     // Volunteers
     membersRegistered: "متطوع مسجّل",
